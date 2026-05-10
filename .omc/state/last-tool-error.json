@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"ls -la \\\"C:\\\\xampp\\\\htdocs\\\\vtigercrm\\\\includes\\\\fields\\\" 2>/dev/null\",\"description\":\"List fields directory\"}",
-  "error": "Exit code 2",
-  "timestamp": "2026-05-10T05:19:38.119Z",
-  "retry_count": 2
-}

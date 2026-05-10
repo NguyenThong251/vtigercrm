@@ -1,0 +1,311 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1778393687164,
+  "projectRoot": "C:\\xampp\\htdocs\\vtigercrm",
+  "techStack": {
+    "languages": [
+      {
+        "name": "PHP",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "composer.json"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "composer",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "test"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "cache": {
+      "path": "cache",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1778393687128,
+      "keyFiles": [
+        "index.html",
+        "manifest.xml",
+        "Project.zip",
+        "ProjectMilestone.zip",
+        "ProjectTask.zip"
+      ]
+    },
+    "cron": {
+      "path": "cron",
+      "purpose": null,
+      "fileCount": 15,
+      "lastAccessed": 1778393687129,
+      "keyFiles": [
+        "executecron.sh",
+        "intimateTaskStatus.bat",
+        "intimateTaskStatus.php",
+        "jobstartwindows.bat",
+        "MailScanner.service"
+      ]
+    },
+    "data": {
+      "path": "data",
+      "purpose": "Data files",
+      "fileCount": 3,
+      "lastAccessed": 1778393687130,
+      "keyFiles": [
+        "CRMEntity.php",
+        "Tracker.php",
+        "VTEntityDelta.php"
+      ]
+    },
+    "include": {
+      "path": "include",
+      "purpose": null,
+      "fileCount": 12,
+      "lastAccessed": 1778393687131,
+      "keyFiles": [
+        "AGENTS.md",
+        "ChartUtils.php",
+        "ComboStrings.php",
+        "ComboUtil.php",
+        "CustomFieldUtil.php"
+      ]
+    },
+    "includes": {
+      "path": "includes",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1778393687131,
+      "keyFiles": [
+        "AGENTS.md",
+        "Loader.php"
+      ]
+    },
+    "kcfinder": {
+      "path": "kcfinder",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1778393687132,
+      "keyFiles": [
+        "browse.php",
+        "config.php",
+        "css.php",
+        "js_localize.php",
+        "upload.php"
+      ]
+    },
+    "languages": {
+      "path": "languages",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778393687132,
+      "keyFiles": [
+        "WSAPP.php"
+      ]
+    },
+    "layouts": {
+      "path": "layouts",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778393687133,
+      "keyFiles": [
+        "AGENTS.md"
+      ]
+    },
+    "libraries": {
+      "path": "libraries",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1778393687133,
+      "keyFiles": [
+        "AGENTS.md"
+      ]
+    },
+    "license": {
+      "path": "license",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1778393687134,
+      "keyFiles": [
+        "License_linux.txt",
+        "License_windows.txt"
+      ]
+    },
+    "logs": {
+      "path": "logs",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1778393687136,
+      "keyFiles": [
+        "todel.txt.txt"
+      ]
+    },
+    "migrate": {
+      "path": "migrate",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778393687136,
+      "keyFiles": [
+        "index.php"
+      ]
+    },
+    "modules": {
+      "path": "modules",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778393687137,
+      "keyFiles": [
+        "AGENTS.md"
+      ]
+    },
+    "oauth2callback": {
+      "path": "oauth2callback",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1778393687137,
+      "keyFiles": [
+        "config.oauth2-sample.php",
+        "index.php",
+        "README.md"
+      ]
+    },
+    "packages": {
+      "path": "packages",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1778393687138,
+      "keyFiles": []
+    },
+    "pkg": {
+      "path": "pkg",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1778393687138,
+      "keyFiles": []
+    },
+    "resources": {
+      "path": "resources",
+      "purpose": null,
+      "fileCount": 6,
+      "lastAccessed": 1778393687139,
+      "keyFiles": [
+        "app.js",
+        "Connector.js",
+        "helper.js",
+        "jquery.additions.js",
+        "ProgressIndicator.js"
+      ]
+    },
+    "schema": {
+      "path": "schema",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778393687140,
+      "keyFiles": [
+        "DatabaseSchema.xml"
+      ]
+    },
+    "storage": {
+      "path": "storage",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1778393687141,
+      "keyFiles": [
+        "vtiger.txt"
+      ]
+    },
+    "test": {
+      "path": "test",
+      "purpose": "Test files",
+      "fileCount": 0,
+      "lastAccessed": 1778393687141,
+      "keyFiles": []
+    },
+    "user_privileges": {
+      "path": "user_privileges",
+      "purpose": null,
+      "fileCount": 6,
+      "lastAccessed": 1778393687142,
+      "keyFiles": [
+        "audit_trail.php",
+        "default_module_view.php",
+        "enable_backup.php",
+        "index.html",
+        "sharing_privileges_1.php"
+      ]
+    },
+    "vendor": {
+      "path": "vendor",
+      "purpose": "Third-party code",
+      "fileCount": 2,
+      "lastAccessed": 1778393687142,
+      "keyFiles": [
+        "autoload.php"
+      ]
+    },
+    "vtlib": {
+      "path": "vtlib",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1778393687143,
+      "keyFiles": [
+        "AGENTS.md",
+        "README-UsingModuleDir.txt",
+        "vtlib-Copyright.txt"
+      ]
+    },
+    "kcfinder\\lib": {
+      "path": "kcfinder\\lib",
+      "purpose": "Library code",
+      "fileCount": 9,
+      "lastAccessed": 1778393687146,
+      "keyFiles": [
+        "class_gd.php",
+        "class_input.php",
+        "class_zipFolder.php"
+      ]
+    },
+    "modules\\Assets": {
+      "path": "modules\\Assets",
+      "purpose": "Static assets",
+      "fileCount": 2,
+      "lastAccessed": 1778393687150,
+      "keyFiles": [
+        "Assets.php",
+        "schema.xml"
+      ]
+    },
+    "pkg\\bin": {
+      "path": "pkg\\bin",
+      "purpose": "Executable scripts",
+      "fileCount": 8,
+      "lastAccessed": 1778393687151,
+      "keyFiles": [
+        "datamigration.bat",
+        "datamigration.sh",
+        "find_replace.bat"
+      ]
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}
