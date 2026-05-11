@@ -306,6 +306,19 @@
       ]
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "fcv_cleanup.sql",
+      "accessCount": 5,
+      "lastAccessed": 1778427421712,
+      "type": "file"
+    },
+    {
+      "path": "fcv_inspect.php",
+      "accessCount": 1,
+      "lastAccessed": 1778427184453,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }

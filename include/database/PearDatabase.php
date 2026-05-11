@@ -998,6 +998,7 @@ class PearDatabase{
 		$this->println("ADODB getColumnNames table=".$tablename);
 		$this->checkConnection();
 		$adoflds = $this->database->MetaColumns($tablename);
+		$colNames = [];  // PHP 8 fix: always return array, never null
 		$i=0;
         if(!empty($adoflds)){
             foreach($adoflds as $fld) {

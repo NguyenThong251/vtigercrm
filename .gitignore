@@ -1,3 +1,20 @@
 vendor/*
 !vendor/.htaccess
 .vscode/*
+
+# Smarty compiled cache
+test/templates_c/
+
+# Vtiger runtime cache
+cache/
+
+# Logs
+logs/*.log
+
+# Claude / OMC agent session files
+.claude/
+.omc/sessions/
+
+# OS
+.DS_Store
+Thumbs.db

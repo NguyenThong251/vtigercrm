@@ -1,0 +1,17 @@
+{
+    "ref": "20260510_081958_Test_create",
+    "module": "Test",
+    "action": "create",
+    "time": "2026-05-10 08:19:58",
+    "tab_row": null,
+    "files": [],
+    "dirs": [
+        "modules\/Test",
+        "layouts\/v7\/modules\/Test"
+    ],
+    "tables": [
+        "vtiger_test",
+        "vtiger_testcf",
+        "vtiger_testgrouprel"
+    ]
+}
