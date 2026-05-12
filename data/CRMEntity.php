@@ -35,6 +35,22 @@ class CRMEntity {
 	var $recordSource = 'CRM';
 	var $mode;
 
+	/** @var bool|null Cached: whether vtiger_fcv_multiowner table exists */
+	private static ?bool $fcvMoTableExists = null;
+
+	/**
+	 * Returns true when the FCVMultiOwner feature table is present.
+	 * Checked once per request; safe to call before the feature is installed.
+	 */
+	private static function fcvMultiOwnerActive(): bool {
+		if (self::$fcvMoTableExists === null) {
+			$db  = PearDatabase::getInstance();
+			$res = $db->pquery("SHOW TABLES LIKE 'vtiger_fcv_multiowner'", []);
+			self::$fcvMoTableExists = ($db->num_rows($res) > 0);
+		}
+		return self::$fcvMoTableExists;
+	}
+
 	public $moduleName;
 	/**
 	 * Detect if we are in bulk save mode, where some features can be turned-off
@@ -2871,11 +2887,26 @@ class CRMEntity {
 			$this->setupTemporaryTable($tableName, $sharedTabId, $user, $current_user_parent_role_seq, $current_user_groups);
 			// for secondary module we should join the records even if record is not there(primary module without related record)
 				if($scope == ''){
-					$query = " INNER JOIN $tableName $tableName$scope ON $tableName$scope.id = " .
-							"vtiger_crmentity$scope.smownerid ";
+					if (self::fcvMultiOwnerActive()) {
+						$query = " INNER JOIN $tableName $tableName$scope ON ($tableName$scope.id = " .
+								"vtiger_crmentity$scope.smownerid " .
+								"OR vtiger_crmentity$scope.crmid IN " .
+								"(SELECT crmid FROM vtiger_fcv_multiowner WHERE userid={$user->id})) ";
+					} else {
+						$query = " INNER JOIN $tableName $tableName$scope ON $tableName$scope.id = " .
+								"vtiger_crmentity$scope.smownerid ";
+					}
 				}else{
-					$query = " INNER JOIN $tableName $tableName$scope ON $tableName$scope.id = " .
-							"vtiger_crmentity$scope.smownerid OR vtiger_crmentity$scope.smownerid IS NULL";
+					if (self::fcvMultiOwnerActive()) {
+						$query = " INNER JOIN $tableName $tableName$scope ON ($tableName$scope.id = " .
+								"vtiger_crmentity$scope.smownerid " .
+								"OR vtiger_crmentity$scope.crmid IN " .
+								"(SELECT crmid FROM vtiger_fcv_multiowner WHERE userid={$user->id})) " .
+								"OR vtiger_crmentity$scope.smownerid IS NULL";
+					} else {
+						$query = " INNER JOIN $tableName $tableName$scope ON $tableName$scope.id = " .
+								"vtiger_crmentity$scope.smownerid OR vtiger_crmentity$scope.smownerid IS NULL";
+					}
 				}
 			}
 		return $query;

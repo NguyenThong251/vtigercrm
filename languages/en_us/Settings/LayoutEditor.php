@@ -66,6 +66,7 @@ $languageStrings = array(
 	'Phone'=>'Phone',
 	'PickList'=>'Pick List',
 	'MultiSelectCombo'=>'Multi-Select Combo Box',
+	'FCVMultiOwner'  => 'Multi Owners',
 	'URL' => 'URL',
 	'Checkbox' => 'Checkbox',
 	'TextArea' => 'Text Area',

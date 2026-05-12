@@ -710,6 +710,18 @@ function isReadPermittedBySharing($module,$tabid,$actionid,$record_id)
 			}
 		}
 	}
+	// FCVMultiOwner fallback: user explicitly granted read access on this specific record
+	if ($sharePer == 'no') {
+		$db = PearDatabase::getInstance();
+		$res = $db->pquery(
+			"SELECT 1 FROM vtiger_fcv_multiowner WHERE crmid = ? AND userid = ? LIMIT 1",
+			[$record_id, $current_user->id]
+		);
+		if ($db->num_rows($res) > 0) {
+			$sharePer = 'yes';
+		}
+	}
+
 	$log->debug("Exiting isReadPermittedBySharing method ...");
 	return $sharePer;
 }
@@ -848,6 +860,18 @@ function isReadWritePermittedBySharing($module,$tabid,$actionid,$record_id)
 
 				}
 			}
+		}
+	}
+
+	// FCVMultiOwner fallback: user explicitly granted write access on this specific record
+	if ($sharePer == 'no') {
+		$db = PearDatabase::getInstance();
+		$res = $db->pquery(
+			"SELECT 1 FROM vtiger_fcv_multiowner WHERE crmid = ? AND userid = ? AND permission = 'write' LIMIT 1",
+			[$record_id, $current_user->id]
+		);
+		if ($db->num_rows($res) > 0) {
+			$sharePer = 'yes';
 		}
 	}
 

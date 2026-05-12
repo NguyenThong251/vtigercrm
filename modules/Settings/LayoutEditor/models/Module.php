@@ -92,7 +92,7 @@ class Settings_LayoutEditor_Module_Model extends Vtiger_Module_Model {
 	public function getAddSupportedFieldTypes() {
 		return array(
 			'Text','Decimal','Integer','Percent','Currency','Date','Email','Phone','Picklist',
-			'URL','Checkbox','TextArea','MultiSelectCombo','Skype','Time'
+			'URL','Checkbox','TextArea','MultiSelectCombo','Skype','Time','FCVMultiOwner'
 		);
 	}
 
@@ -291,6 +291,11 @@ class Settings_LayoutEditor_Module_Model extends Vtiger_Module_Model {
 			   Case 'Skype' :
 							   $uitype = 85;
 							   $type = "VARCHAR(255) default '' "; //adodb type
+							   $uichekdata='V~O';
+							   break;
+			   Case 'FCVMultiOwner' :
+							   $uitype = 200;
+							   $type = "VARCHAR(255) default '' "; //stores JSON blob; actual data in vtiger_fcv_multiowner
 							   $uichekdata='V~O';
 							   break;
 			   Case 'Integer' :

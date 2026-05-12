@@ -227,6 +227,42 @@ class FcvModuleBuilder_Builder_Model {
                 [$moduleName, $moduleLabel, $description]
             );
 
+            // ---- 18b. Register in org sharing so module appears in Settings → Sharing Access ----
+            // vtiger_def_org_share uses INNER JOIN — modules without a row are invisible.
+            // permission=2 = Public Read Write (matches all standard entity modules)
+            // editstatus=0 = admin can change the rule
+            $db->pquery(
+                'INSERT IGNORE INTO vtiger_def_org_share (tabid, permission, editstatus) VALUES (?,?,?)',
+                [$module->id, 2, 0]
+            );
+
+            // ---- 18c. Create default "All" list view (vtiger_customview) ----
+            // vtiger_customview.cvid is NOT auto-increment — must be assigned manually.
+            // Without this, the module list page is blank and JS navigation breaks.
+            $cvRes  = $db->pquery('SELECT COALESCE(MAX(cvid),0)+1 AS next_cv FROM vtiger_customview', []);
+            $cvRow  = $db->fetch_array($cvRes);
+            $nextCv = (int)($cvRow['next_cv'] ?? $cvRow[0] ?? 1);
+
+            $db->pquery(
+                "INSERT INTO vtiger_customview (cvid, viewname, setdefault, setmetrics, entitytype, status, userid)
+                 VALUES (?, 'All', 1, 0, ?, 0, 1)",
+                [$nextCv, $moduleName]
+            );
+
+            // Column list format: {table}:{column}:{fieldname}:{Module_Label}:{typeofdata}
+            $lcMod = strtolower($moduleName);
+            $cvColumns = [
+                1 => "vtiger_{$lcMod}:{$lcMod}name:{$lcMod}name:{$moduleName}_Name:V",
+                2 => "vtiger_crmentity:smownerid:assigned_user_id:{$moduleName}_Assigned_To:V",
+                3 => "vtiger_crmentity:createdtime:createdtime:{$moduleName}_Created_Time:DT",
+            ];
+            foreach ($cvColumns as $idx => $col) {
+                $db->pquery(
+                    'INSERT INTO vtiger_cvcolumnlist (cvid, columnindex, columnname) VALUES (?,?,?)',
+                    [$nextCv, $idx, $col]
+                );
+            }
+
             // ---- 19. Assign to navigation menu group via vtiger_app2tab (Vtiger 8 nav system) ----
             if (!empty($parentMenu)) {
                 $appName = strtoupper($parentMenu);
@@ -479,8 +515,9 @@ PHP;
                 unlink($langFile);
             }
 
-            // 4. Remove from tracking
+            // 4. Remove from tracking + sharing rules
             $db->pquery('DELETE FROM vtiger_fcv_custom_modules WHERE module_name=?', [$moduleName]);
+            $db->pquery('DELETE FROM vtiger_def_org_share WHERE tabid=?', [$module->id]);
 
             // 5. Flush caches
             Vtiger_Cache::flush();

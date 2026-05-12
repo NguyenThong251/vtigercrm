@@ -3,8 +3,25 @@
 // Run once from vtiger web root: php modules/FCVMultiOwner/setup.php
 chdir(dirname(__FILE__) . '/../../');
 require_once 'includes/main/WebUI.php';
+require_once 'vtlib/Vtiger/Module.php';
 
 $db = PearDatabase::getInstance();
+
+// ── 0. Register FCVMultiOwner as a utility module in vtiger_tab ──────────────
+// presence=1 = hidden from nav but still routable (needed for AJAX actions)
+// isentitytype=0 = utility module, no CRUD views
+$existing = Vtiger_Module::getInstance('FCVMultiOwner');
+if (!$existing) {
+    $mod               = new Vtiger_Module();
+    $mod->name         = 'FCVMultiOwner';
+    $mod->label        = 'FCVMultiOwner';
+    $mod->isentitytype = 0;
+    $mod->presence     = 1;
+    $mod->save();
+    echo "✓ FCVMultiOwner registered in vtiger_tab\n";
+} else {
+    echo "- FCVMultiOwner already in vtiger_tab (tabid=" . $existing->id . ")\n";
+}
 
 // ── 1. Main multiowner table ─────────────────────────────────────────────────
 $db->pquery("CREATE TABLE IF NOT EXISTS vtiger_fcv_multiowner (
@@ -33,7 +50,6 @@ $db->pquery("CREATE TABLE IF NOT EXISTS vtiger_fcv_multiowner_grants (
 echo "✓ vtiger_fcv_multiowner_grants created\n";
 
 // ── 3. Register event handler ─────────────────────────────────────────────────
-require_once 'vtlib/Vtiger/Module.php';
 require_once 'include/events/include.inc';
 
 $handlerFile = 'modules/FCVMultiOwner/FCVMultiOwnerHandler.php';
