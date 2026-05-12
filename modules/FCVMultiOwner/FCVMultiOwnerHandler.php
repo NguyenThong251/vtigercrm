@@ -52,10 +52,10 @@ class FCVMultiOwnerHandler extends VTEventHandler {
                 $raw = $_REQUEST[$fieldname] ?? '';
             }
 
-            if (empty($raw) || $raw === '[]') continue;
+            if ($raw === '' || $raw === null) continue;
 
             $owners = json_decode($raw, true);
-            if (!is_array($owners) || empty($owners)) continue;
+            if (!is_array($owners)) continue;
 
             FCVMultiOwner_MultiOwner_Model::syncForRecord($crmid, $tabid, $owners);
         }

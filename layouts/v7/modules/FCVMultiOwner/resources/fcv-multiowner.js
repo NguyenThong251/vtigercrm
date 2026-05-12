@@ -1,183 +1,300 @@
 /* layouts/v7/modules/FCVMultiOwner/resources/fcv-multiowner.js
- * FCVMultiOwner — Chip UI for multi-owner field (uitype 200)
- * Handles: chip render, search popup, R/W toggle, remove, JSON serialization
+ * Modal manager for FCVMultiOwner (uitype 200).
  */
 (function ($) {
     'use strict';
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    function normalizePermission(permission) {
+        return permission === 'read' ? 'read' : 'write';
+    }
+
+    function normalizeOwner(owner) {
+        var userid = parseInt(owner.userid || owner.id, 10);
+        if (!userid) {
+            return null;
+        }
+
+        return {
+            userid: userid,
+            username: owner.username || owner.name || ('User ' + userid),
+            permission: normalizePermission(owner.permission)
+        };
+    }
+
+    function parseOwnersValue(raw) {
+        var value = raw || [];
+
+        if (typeof value === 'string') {
+            try {
+                value = value ? JSON.parse(value) : [];
+            } catch (e) {
+                value = [];
+            }
+        }
+
+        if (!$.isArray(value)) {
+            value = [];
+        }
+
+        return $.map(value, normalizeOwner);
+    }
+
+    function readOwners($wrapper) {
+        var hiddenValue = $wrapper.find('.fcv-mo-hidden').val();
+        if (hiddenValue) {
+            return parseOwnersValue(hiddenValue);
+        }
+        return parseOwnersValue($wrapper.attr('data-owners') || $wrapper.data('owners'));
+    }
+
+    function serializeOwners(owners) {
+        return JSON.stringify($.map(owners, function (owner) {
+            return {
+                userid: owner.userid,
+                username: owner.username,
+                permission: normalizePermission(owner.permission)
+            };
+        }));
+    }
+
+    function updateSummary($wrapper, owners) {
+        var count = owners.length;
+        var summary = count ? count + ' owner' + (count > 1 ? 's' : '') : 'No owners';
+        var names = $.map(owners.slice(0, 2), function (owner) {
+            return owner.username;
+        }).join(', ');
+
+        if (count > 2) {
+            names += ' +' + (count - 2);
+        }
+
+        $wrapper.find('.fcv-mo-inline-summary')
+            .text(names || summary)
+            .attr('title', count ? $.map(owners, function (owner) { return owner.username; }).join(', ') : summary);
+
+        $wrapper.find('.fcv-mo-count').text(summary);
+    }
+
+    function writeOwners($wrapper, owners) {
+        var serialized = serializeOwners(owners);
+        $wrapper.attr('data-owners', JSON.stringify(owners));
+        $wrapper.find('.fcv-mo-hidden').val(serialized).trigger('change');
+        updateSummary($wrapper, owners);
+    }
 
     function getInitial(name) {
         return ((name || '?').trim().charAt(0) || '?').toUpperCase();
     }
 
-    function buildChip(userid, name, permission) {
-        var perm  = (permission === 'read') ? 'read' : 'write';
-        var label = (perm === 'write') ? 'W' : 'R';
-        var cls   = (perm === 'write') ? 'fcv-mo-write' : 'fcv-mo-read';
-        return $('<span class="fcv-mo-chip">')
+    function makeSelectedRow(owner) {
+        return $('<div class="fcv-mo-selected-row">')
+            .attr('data-userid', owner.userid)
+            .append(
+                $('<span class="fcv-mo-avatar">').text(getInitial(owner.username)),
+                $('<span class="fcv-mo-selected-name">').text(owner.username),
+                $('<select class="fcv-mo-permission-select inputElement">')
+                    .append(
+                        $('<option value="write">').text('Write'),
+                        $('<option value="read">').text('Read')
+                    )
+                    .val(normalizePermission(owner.permission)),
+                $('<button type="button" class="btn btn-default btn-sm fcv-mo-remove-owner" title="Remove">')
+                    .append($('<i class="fa fa-trash" aria-hidden="true"></i>'))
+            );
+    }
+
+    function makeAvailableRow(user) {
+        return $('<div class="fcv-mo-available-row">')
             .attr({
-                'data-userid':     userid,
-                'data-name':       name,
-                'data-permission': perm
+                'data-userid': user.id,
+                'data-username': user.name
             })
             .append(
-                $('<span class="fcv-mo-avatar">').text(getInitial(name)),
-                $('<span class="fcv-mo-name">').text(name),
-                $('<span class="fcv-mo-perm ' + cls + '" title="Click to toggle Read/Write">').text(label),
-                $('<button type="button" class="fcv-mo-remove" tabindex="-1" title="Remove">').html('&times;')
+                $('<span class="fcv-mo-avatar">').text(getInitial(user.name)),
+                $('<span class="fcv-mo-available-name">').text(user.name),
+                $('<button type="button" class="btn btn-default btn-sm fcv-mo-add-owner">')
+                    .append($('<i class="fa fa-plus" aria-hidden="true"></i>'), document.createTextNode(' Add'))
             );
     }
 
-    function serializeChips($wrapper) {
-        var owners = [];
-        $wrapper.find('.fcv-mo-chips .fcv-mo-chip').each(function () {
-            owners.push({
-                userid:     parseInt($(this).attr('data-userid'), 10),
-                permission: $(this).attr('data-permission')
+    function openManager($wrapper) {
+        var owners = readOwners($wrapper).slice();
+        var usersCache = [];
+        var searchTimer = null;
+
+        var $modal = $(
+            '<div class="modal fade fcv-mo-manager" tabindex="-1" role="dialog">' +
+                '<div class="modal-dialog modal-lg fcv-mo-manager-dialog" role="document">' +
+                    '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<h4 class="modal-title">Manage owners</h4>' +
+                        '</div>' +
+                        '<div class="modal-body">' +
+                            '<div class="fcv-mo-manager-grid">' +
+                                '<div class="fcv-mo-panel fcv-mo-selected-panel">' +
+                                    '<div class="fcv-mo-panel-heading"><span>Selected users</span><span class="fcv-mo-count"></span></div>' +
+                                    '<div class="fcv-mo-selected-list"></div>' +
+                                '</div>' +
+                                '<div class="fcv-mo-panel fcv-mo-available-panel">' +
+                                    '<div class="fcv-mo-panel-heading"><span>Available users</span></div>' +
+                                    '<input type="text" class="inputElement fcv-mo-user-search" placeholder="Search users">' +
+                                    '<div class="fcv-mo-available-list"></div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="modal-footer">' +
+                            '<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>' +
+                            '<button type="button" class="btn btn-success fcv-mo-apply">Apply</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
+        );
+
+        function selectedIds() {
+            var ids = {};
+            $.each(owners, function (_, owner) {
+                ids[owner.userid] = true;
             });
-        });
-        $wrapper.find('.fcv-mo-hidden').val(JSON.stringify(owners));
-    }
+            return ids;
+        }
 
-    // ── Search Popup ─────────────────────────────────────────────────────────
+        function renderSelected() {
+            var $list = $modal.find('.fcv-mo-selected-list').empty();
+            $modal.find('.fcv-mo-count').text(owners.length + ' selected');
 
-    function openPopup($wrapper) {
-        // Close any existing popup
-        $('.fcv-mo-popup').remove();
+            if (!owners.length) {
+                $list.append('<div class="fcv-mo-empty-state">No users selected</div>');
+                return;
+            }
 
-        var $popup = $('<div class="fcv-mo-popup">')
-            .append(
-                $('<input type="text" class="fcv-mo-popup-search" placeholder="Search user by name...">'),
-                $('<div class="fcv-mo-popup-results">')
-            );
+            $.each(owners, function (_, owner) {
+                $list.append(makeSelectedRow(owner));
+            });
+        }
 
-        // Position below the Add button
-        var $btn    = $wrapper.find('.fcv-mo-add-btn');
-        var offset  = $btn.offset();
-        $popup.css({
-            top:  offset.top + $btn.outerHeight() + 4,
-            left: offset.left
-        });
-        $('body').append($popup);
+        function renderAvailable() {
+            var ids = selectedIds();
+            var $list = $modal.find('.fcv-mo-available-list').empty();
+            var added = 0;
 
-        var $input   = $popup.find('.fcv-mo-popup-search');
-        var $results = $popup.find('.fcv-mo-popup-results');
-        $input.trigger('focus');
+            $.each(usersCache, function (_, user) {
+                if (ids[parseInt(user.id, 10)]) {
+                    return;
+                }
+                added++;
+                $list.append(makeAvailableRow(user));
+            });
 
-        // ── Shared search function ──
-        // Vtiger_Response wraps results as {success:true, result:[...]}
-        function doSearch(q) {
+            if (!added) {
+                $list.append('<div class="fcv-mo-empty-state">No users available</div>');
+            }
+        }
+
+        function renderAll() {
+            renderSelected();
+            renderAvailable();
+        }
+
+        function searchUsers(query) {
+            var $list = $modal.find('.fcv-mo-available-list');
+            $list.html('<div class="fcv-mo-empty-state">Loading...</div>');
+
             $.getJSON('index.php', {
                 module: 'FCVMultiOwner',
                 action: 'SearchUsers',
-                query:  q
-            })
-            .done(function (data) {
-                $results.empty();
-                var users = (data && data.success && Array.isArray(data.result)) ? data.result : [];
-                if (!users.length) {
-                    $results.append('<div class="fcv-mo-no-results">No users found</div>');
-                    return;
-                }
-                var added = 0;
-                users.forEach(function (u) {
-                    // Skip already-added users
-                    if ($wrapper.find('.fcv-mo-chip[data-userid="' + u.id + '"]').length) {
-                        return;
-                    }
-                    added++;
-                    $('<div class="fcv-mo-result-item">')
-                        .text(u.name)
-                        .attr({'data-userid': u.id, 'data-name': u.name})
-                        .on('click', function () {
-                            var $chip = buildChip(u.id, u.name, 'write');
-                            $wrapper.find('.fcv-mo-add-btn').before($chip);
-                            serializeChips($wrapper);
-                            $popup.remove();
-                        })
-                        .appendTo($results);
-                });
-                if (added === 0) {
-                    $results.append('<div class="fcv-mo-no-results">No users found</div>');
-                }
-            })
-            .fail(function (xhr) {
-                $results.html('<div class="fcv-mo-no-results">Search failed (' + xhr.status + ')</div>');
+                query: query || ''
+            }).done(function (data) {
+                usersCache = (data && data.success && $.isArray(data.result)) ? data.result : [];
+                renderAvailable();
+            }).fail(function (xhr) {
+                $list.html('<div class="fcv-mo-empty-state">Search failed (' + xhr.status + ')</div>');
             });
         }
 
-        // ── Load all users immediately on open (empty query = all users) ──
-        doSearch('');
-
-        // ── Live filter as user types ──
-        var timer;
-        $input.on('input', function () {
-            clearTimeout(timer);
-            var q = $(this).val().trim();
-            timer = setTimeout(function () { doSearch(q); }, 250);
-        });
-
-        // ── Close on outside click ──
-        setTimeout(function () {
-            $(document).one('click.fcvpopup', function (e) {
-                if (!$(e.target).closest('.fcv-mo-popup, .fcv-mo-add-btn').length) {
-                    $popup.remove();
+        $modal.on('change', '.fcv-mo-permission-select', function () {
+            var userid = parseInt($(this).closest('.fcv-mo-selected-row').attr('data-userid'), 10);
+            var permission = normalizePermission($(this).val());
+            $.each(owners, function (_, owner) {
+                if (owner.userid === userid) {
+                    owner.permission = permission;
+                    return false;
                 }
             });
-        }, 0);
-    }
+        });
 
-    // ── Init a single wrapper ────────────────────────────────────────────────
+        $modal.on('click', '.fcv-mo-remove-owner', function () {
+            var userid = parseInt($(this).closest('.fcv-mo-selected-row').attr('data-userid'), 10);
+            owners = $.grep(owners, function (owner) {
+                return owner.userid !== userid;
+            });
+            renderAll();
+        });
+
+        $modal.on('click', '.fcv-mo-add-owner', function () {
+            var $row = $(this).closest('.fcv-mo-available-row');
+            var owner = normalizeOwner({
+                id: $row.attr('data-userid'),
+                name: $row.attr('data-username'),
+                permission: 'write'
+            });
+            if (owner) {
+                owners.push(owner);
+                renderAll();
+            }
+        });
+
+        $modal.on('input', '.fcv-mo-user-search', function () {
+            clearTimeout(searchTimer);
+            var query = $(this).val();
+            searchTimer = setTimeout(function () {
+                searchUsers(query);
+            }, 250);
+        });
+
+        $modal.on('click', '.fcv-mo-apply', function () {
+            writeOwners($wrapper, owners);
+            $modal.modal('hide');
+        });
+
+        $modal.on('hidden.bs.modal', function () {
+            $modal.remove();
+        });
+
+        $('body').append($modal);
+        renderSelected();
+        searchUsers('');
+        $modal.modal('show');
+        $modal.find('.fcv-mo-user-search').trigger('focus');
+    }
 
     function initWrapper($wrapper) {
-        if ($wrapper.data('fcv-mo-init')) return;
-        $wrapper.data('fcv-mo-init', true);
-
-        // Load initial chips from data-owners attribute
-        var existing = [];
-        try {
-            var raw = $wrapper.attr('data-owners');
-            if (raw) existing = JSON.parse(raw);
-        } catch (e) {
-            existing = [];
+        if ($wrapper.data('fcv-mo-init')) {
+            updateSummary($wrapper, readOwners($wrapper));
+            return;
         }
 
-        existing.forEach(function (o) {
-            $wrapper.find('.fcv-mo-add-btn').before(
-                buildChip(o.userid, o.username || o.name || ('User ' + o.userid), o.permission)
+        $wrapper.data('fcv-mo-init', true);
+
+        if (!$wrapper.find('.fcv-mo-inline-control').length) {
+            $wrapper.find('.fcv-mo-chips').empty().append(
+                $('<button type="button" class="btn btn-default btn-sm fcv-mo-manage-btn"></button>').append(
+                    $('<i class="fa fa-users" aria-hidden="true"></i>'),
+                    document.createTextNode(' Manage owners')
+                ),
+                $('<span class="fcv-mo-inline-summary"></span>')
             );
-        });
-        serializeChips($wrapper);
+        }
 
-        // ── Add button click ──
-        $wrapper.on('click', '.fcv-mo-add-btn', function (e) {
-            e.stopPropagation();
-            openPopup($wrapper);
-        });
+        writeOwners($wrapper, readOwners($wrapper));
 
-        // ── Toggle R/W badge ──
-        $wrapper.on('click', '.fcv-mo-perm', function (e) {
+        $wrapper.on('click', '.fcv-mo-manage-btn', function (e) {
+            e.preventDefault();
             e.stopPropagation();
-            var $chip = $(this).closest('.fcv-mo-chip');
-            var next  = ($chip.attr('data-permission') === 'write') ? 'read' : 'write';
-            $chip.attr('data-permission', next);
-            $(this)
-                .text(next === 'write' ? 'W' : 'R')
-                .removeClass('fcv-mo-write fcv-mo-read')
-                .addClass(next === 'write' ? 'fcv-mo-write' : 'fcv-mo-read');
-            serializeChips($wrapper);
-        });
-
-        // ── Remove chip ──
-        $wrapper.on('click', '.fcv-mo-remove', function (e) {
-            e.stopPropagation();
-            $(this).closest('.fcv-mo-chip').remove();
-            serializeChips($wrapper);
+            openManager($wrapper);
         });
     }
-
-    // ── Bootstrap ────────────────────────────────────────────────────────────
 
     function initAll() {
         $('[data-uitype="200"]').each(function () {
@@ -187,29 +304,28 @@
 
     $(document).ready(initAll);
 
-    // Re-init after vtiger Quick-Create, AJAX sub-panel, or full edit view load
     if (typeof app !== 'undefined' && app.event) {
-        app.event.on('Post.EditView.Load',    initAll);
+        app.event.on('Post.EditView.Load', initAll);
         app.event.on('Post.QuickCreate.Load', initAll);
     }
 
-    // MutationObserver: catches inline-edit renders (detail view field click)
-    // and any dynamically injected edit forms that don't fire vtiger events
     if (typeof MutationObserver !== 'undefined') {
         var observer = new MutationObserver(function (mutations) {
             var found = false;
-            mutations.forEach(function (m) {
-                m.addedNodes.forEach(function (node) {
-                    if (node.nodeType !== 1) return;
-                    // direct match
-                    if ($(node).is('[data-uitype="200"]')) { found = true; }
-                    // descendant match
-                    if ($(node).find('[data-uitype="200"]').length) { found = true; }
+            $.each(mutations, function (_, mutation) {
+                $.each(mutation.addedNodes, function (_, node) {
+                    if (node.nodeType !== 1) {
+                        return;
+                    }
+                    if ($(node).is('[data-uitype="200"]') || $(node).find('[data-uitype="200"]').length) {
+                        found = true;
+                    }
                 });
             });
-            if (found) { initAll(); }
+            if (found) {
+                initAll();
+            }
         });
         observer.observe(document.body, { childList: true, subtree: true });
     }
-
 }(jQuery));

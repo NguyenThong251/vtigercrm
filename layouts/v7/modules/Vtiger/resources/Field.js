@@ -443,7 +443,11 @@ Vtiger_Field_Js('Vtiger_Fcvmultiowner_Field_Js',{},{
 	 */
 	getUi : function() {
 		var owners = this.getValue() || '[]';
-		var wrapper = jQuery('<div class="fcv-mo-wrapper"></div>');
+		if (typeof owners !== 'string') {
+			owners = JSON.stringify(owners);
+		}
+
+		var wrapper = jQuery('<div class="fcv-mo-wrapper fcv-mo-inline-editor"></div>');
 		wrapper.attr({
 			'data-uitype': '200',
 			'data-fieldname': this.getName(),
@@ -456,14 +460,15 @@ Vtiger_Field_Js('Vtiger_Fcvmultiowner_Field_Js',{},{
 			'id': 'fcv_mo_inline_' + this.getName()
 		}).val(owners);
 
-		var chips = jQuery('<div class="fcv-mo-chips"></div>');
-		var addButton = jQuery('<button type="button" class="fcv-mo-add-btn"></button>');
-		addButton.append(
-			jQuery('<span aria-hidden="true"></span>').text('+'),
-			document.createTextNode(' Add owner')
+		var control = jQuery('<div class="fcv-mo-inline-control"></div>');
+		control.append(
+			jQuery('<button type="button" class="btn btn-default btn-sm fcv-mo-manage-btn"></button>').append(
+				jQuery('<i class="fa fa-users" aria-hidden="true"></i>'),
+				document.createTextNode(' Manage')
+			),
+			jQuery('<span class="fcv-mo-inline-summary"></span>')
 		);
-		chips.append(addButton);
-		wrapper.append(hidden, chips);
+		wrapper.append(hidden, control);
 
 		return this.addValidationToElement(wrapper);
 	}
