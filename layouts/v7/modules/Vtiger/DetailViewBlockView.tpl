@@ -122,6 +122,8 @@
 											<span class="hide edit pull-left">
 												{if $fieldDataType eq 'multipicklist'}
 													<input type="hidden" class="fieldBasicData" data-name='{$FIELD_MODEL->get('name')}[]' data-type="{$fieldDataType}" data-displayvalue='{$FIELD_DISPLAY_VALUE}' data-value="{$FIELD_VALUE}" />
+												{else if $fieldDataType eq 'FCVMultiOwner'}
+													<input type="hidden" class="fieldBasicData" data-name='{$FIELD_MODEL->get('name')}' data-type="{$fieldDataType}" data-displayvalue='{$FIELD_MODEL->getDisplayValue($FIELD_MODEL->get('fieldvalue'), $RECORD->getId(), $RECORD)|escape:'html'}' data-value="{$FIELD_MODEL->getUITypeModel()->getExistingOwnersJson($RECORD->getId())|escape:'html'}" />
 												{else}
 													<input type="hidden" class="fieldBasicData" data-name='{$FIELD_MODEL->get('name')}' data-type="{$fieldDataType}" data-displayvalue='{$FIELD_DISPLAY_VALUE}' data-value="{$FIELD_VALUE}" />
 												{/if}

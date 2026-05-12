@@ -434,6 +434,41 @@ Vtiger_Field_Js('Vtiger_Multipicklist_Field_Js',{},{
 	}
 }),
 
+Vtiger_Field_Js('Vtiger_Fcvmultiowner_Field_Js',{},{
+
+	/**
+	 * Inline edit renderer for the custom FCVMultiOwner uitype.
+	 * Full edit/create views use Smarty, but Detail/Summary quick edit builds
+	 * field controls from this JavaScript model.
+	 */
+	getUi : function() {
+		var owners = this.getValue() || '[]';
+		var wrapper = jQuery('<div class="fcv-mo-wrapper"></div>');
+		wrapper.attr({
+			'data-uitype': '200',
+			'data-fieldname': this.getName(),
+			'data-owners': owners
+		});
+
+		var hidden = jQuery('<input type="hidden" class="fcv-mo-hidden inputElement" />');
+		hidden.attr({
+			'name': this.getName(),
+			'id': 'fcv_mo_inline_' + this.getName()
+		}).val(owners);
+
+		var chips = jQuery('<div class="fcv-mo-chips"></div>');
+		var addButton = jQuery('<button type="button" class="fcv-mo-add-btn"></button>');
+		addButton.append(
+			jQuery('<span aria-hidden="true"></span>').text('+'),
+			document.createTextNode(' Add owner')
+		);
+		chips.append(addButton);
+		wrapper.append(hidden, chips);
+
+		return this.addValidationToElement(wrapper);
+	}
+}),
+
 Vtiger_Field_Js('Vtiger_Boolean_Field_Js',{},{
 
 	/**

@@ -8,8 +8,8 @@ require_once 'modules/FCVMultiOwner/models/MultiOwner.php';
 
 class Vtiger_FCVMultiOwner_UIType extends Vtiger_Base_UIType {
 
-    /** Ensure CSS is only emitted once per request in detail view */
-    private static bool $cssInjected = false;
+    /** Ensure CSS/JS assets are only emitted once per request in detail view */
+    private static bool $assetsInjected = false;
 
     /**
      * Template used in Edit / Create view.
@@ -29,16 +29,18 @@ class Vtiger_FCVMultiOwner_UIType extends Vtiger_Base_UIType {
 
         $owners = FCVMultiOwner_MultiOwner_Model::getForRecord($crmid);
 
-        // Inject CSS link once per request in detail view
-        $css = '';
-        if (!self::$cssInjected) {
-            self::$cssInjected = true;
-            $css = '<link rel="stylesheet" href="layouts/v7/modules/FCVMultiOwner/resources/fcv-multiowner.css">';
+        // Inline edit on Detail/Summary views is rendered by Field.js, not the
+        // Smarty edit template, so load the widget assets from display render.
+        $assets = '';
+        if (!self::$assetsInjected) {
+            self::$assetsInjected = true;
+            $assets = '<link rel="stylesheet" href="layouts/v7/modules/FCVMultiOwner/resources/fcv-multiowner.css">'
+                    . '<script src="layouts/v7/modules/FCVMultiOwner/resources/fcv-multiowner.js"></script>';
         }
 
-        if (empty($owners)) return $css . '<em class="fcv-mo-empty">—</em>';
+        if (empty($owners)) return $assets . '<em class="fcv-mo-empty">&mdash;</em>';
 
-        $html = $css . '<div class="fcv-mo-chips fcv-mo-detail">';
+        $html = $assets . '<div class="fcv-mo-chips fcv-mo-detail">';
         foreach ($owners as $o) {
             $initial = mb_strtoupper(mb_substr($o['username'], 0, 1));
             $perm    = htmlspecialchars($o['permission'], ENT_QUOTES);
