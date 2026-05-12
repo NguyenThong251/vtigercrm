@@ -1,0 +1,7 @@
+{
+  "tool_name": "PowerShell",
+  "tool_input_preview": "{\"command\":\"cd C:\\\\xampp\\\\htdocs\\\\vtigercrm; php fcv_diag.php\",\"description\":\"Check vtiger_field_seq for autonumber fields\"}",
+  "error": "Exit code 255\n=== DESCRIBE vtiger_field_seq ===\n | \n\n--- demo4 row ---",
+  "timestamp": "2026-05-12T01:50:54.320Z",
+  "retry_count": 1
+}

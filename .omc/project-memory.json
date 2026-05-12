@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1778393687164,
+  "lastScanned": 1778547903555,
   "projectRoot": "C:\\xampp\\htdocs\\vtigercrm",
   "techStack": {
     "languages": [
@@ -34,9 +34,13 @@
     "isMonorepo": false,
     "workspaces": [],
     "mainDirectories": [
+      "docs",
       "test"
     ],
-    "gitBranches": null
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
   },
   "customNotes": [],
   "directoryMap": {
@@ -44,7 +48,7 @@
       "path": "cache",
       "purpose": null,
       "fileCount": 5,
-      "lastAccessed": 1778393687128,
+      "lastAccessed": 1778547903508,
       "keyFiles": [
         "index.html",
         "manifest.xml",
@@ -57,7 +61,7 @@
       "path": "cron",
       "purpose": null,
       "fileCount": 15,
-      "lastAccessed": 1778393687129,
+      "lastAccessed": 1778547903509,
       "keyFiles": [
         "executecron.sh",
         "intimateTaskStatus.bat",
@@ -70,18 +74,27 @@
       "path": "data",
       "purpose": "Data files",
       "fileCount": 3,
-      "lastAccessed": 1778393687130,
+      "lastAccessed": 1778547903510,
       "keyFiles": [
         "CRMEntity.php",
         "Tracker.php",
         "VTEntityDelta.php"
       ]
     },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 1,
+      "lastAccessed": 1778547903510,
+      "keyFiles": [
+        "PROJECT-BRAIN.md"
+      ]
+    },
     "include": {
       "path": "include",
       "purpose": null,
       "fileCount": 12,
-      "lastAccessed": 1778393687131,
+      "lastAccessed": 1778547903511,
       "keyFiles": [
         "AGENTS.md",
         "ChartUtils.php",
@@ -94,7 +107,7 @@
       "path": "includes",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1778393687131,
+      "lastAccessed": 1778547903512,
       "keyFiles": [
         "AGENTS.md",
         "Loader.php"
@@ -104,7 +117,7 @@
       "path": "kcfinder",
       "purpose": null,
       "fileCount": 5,
-      "lastAccessed": 1778393687132,
+      "lastAccessed": 1778547903512,
       "keyFiles": [
         "browse.php",
         "config.php",
@@ -116,9 +129,10 @@
     "languages": {
       "path": "languages",
       "purpose": null,
-      "fileCount": 1,
-      "lastAccessed": 1778393687132,
+      "fileCount": 2,
+      "lastAccessed": 1778547903513,
       "keyFiles": [
+        "en_us.FcvModuleBuilder.php",
         "WSAPP.php"
       ]
     },
@@ -126,7 +140,7 @@
       "path": "layouts",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1778393687133,
+      "lastAccessed": 1778547903513,
       "keyFiles": [
         "AGENTS.md"
       ]
@@ -135,7 +149,7 @@
       "path": "libraries",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1778393687133,
+      "lastAccessed": 1778547903514,
       "keyFiles": [
         "AGENTS.md"
       ]
@@ -144,26 +158,17 @@
       "path": "license",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1778393687134,
+      "lastAccessed": 1778547903514,
       "keyFiles": [
         "License_linux.txt",
         "License_windows.txt"
-      ]
-    },
-    "logs": {
-      "path": "logs",
-      "purpose": null,
-      "fileCount": 2,
-      "lastAccessed": 1778393687136,
-      "keyFiles": [
-        "todel.txt.txt"
       ]
     },
     "migrate": {
       "path": "migrate",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1778393687136,
+      "lastAccessed": 1778547903515,
       "keyFiles": [
         "index.php"
       ]
@@ -172,7 +177,7 @@
       "path": "modules",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1778393687137,
+      "lastAccessed": 1778547903515,
       "keyFiles": [
         "AGENTS.md"
       ]
@@ -181,7 +186,7 @@
       "path": "oauth2callback",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1778393687137,
+      "lastAccessed": 1778547903516,
       "keyFiles": [
         "config.oauth2-sample.php",
         "index.php",
@@ -192,21 +197,21 @@
       "path": "packages",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1778393687138,
+      "lastAccessed": 1778547903516,
       "keyFiles": []
     },
     "pkg": {
       "path": "pkg",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1778393687138,
+      "lastAccessed": 1778547903516,
       "keyFiles": []
     },
     "resources": {
       "path": "resources",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1778393687139,
+      "lastAccessed": 1778547903517,
       "keyFiles": [
         "app.js",
         "Connector.js",
@@ -219,7 +224,7 @@
       "path": "schema",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1778393687140,
+      "lastAccessed": 1778547903519,
       "keyFiles": [
         "DatabaseSchema.xml"
       ]
@@ -228,7 +233,7 @@
       "path": "storage",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1778393687141,
+      "lastAccessed": 1778547903519,
       "keyFiles": [
         "vtiger.txt"
       ]
@@ -237,14 +242,14 @@
       "path": "test",
       "purpose": "Test files",
       "fileCount": 0,
-      "lastAccessed": 1778393687141,
+      "lastAccessed": 1778547903520,
       "keyFiles": []
     },
     "user_privileges": {
       "path": "user_privileges",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1778393687142,
+      "lastAccessed": 1778547903521,
       "keyFiles": [
         "audit_trail.php",
         "default_module_view.php",
@@ -257,7 +262,7 @@
       "path": "vendor",
       "purpose": "Third-party code",
       "fileCount": 2,
-      "lastAccessed": 1778393687142,
+      "lastAccessed": 1778547903522,
       "keyFiles": [
         "autoload.php"
       ]
@@ -266,7 +271,7 @@
       "path": "vtlib",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1778393687143,
+      "lastAccessed": 1778547903522,
       "keyFiles": [
         "AGENTS.md",
         "README-UsingModuleDir.txt",
@@ -277,7 +282,7 @@
       "path": "kcfinder\\lib",
       "purpose": "Library code",
       "fileCount": 9,
-      "lastAccessed": 1778393687146,
+      "lastAccessed": 1778547903525,
       "keyFiles": [
         "class_gd.php",
         "class_input.php",
@@ -288,7 +293,7 @@
       "path": "modules\\Assets",
       "purpose": "Static assets",
       "fileCount": 2,
-      "lastAccessed": 1778393687150,
+      "lastAccessed": 1778547903526,
       "keyFiles": [
         "Assets.php",
         "schema.xml"
@@ -298,7 +303,7 @@
       "path": "pkg\\bin",
       "purpose": "Executable scripts",
       "fileCount": 8,
-      "lastAccessed": 1778393687151,
+      "lastAccessed": 1778547903527,
       "keyFiles": [
         "datamigration.bat",
         "datamigration.sh",
@@ -308,15 +313,87 @@
   },
   "hotPaths": [
     {
+      "path": "fcv_diag.php",
+      "accessCount": 10,
+      "lastAccessed": 1778554776540,
+      "type": "file"
+    },
+    {
+      "path": "modules\\FCVMultiOwner\\setup.php",
+      "accessCount": 7,
+      "lastAccessed": 1778548861689,
+      "type": "file"
+    },
+    {
       "path": "fcv_cleanup.sql",
       "accessCount": 5,
       "lastAccessed": 1778427421712,
       "type": "file"
     },
     {
+      "path": "config.inc.php",
+      "accessCount": 3,
+      "lastAccessed": 1778486720123,
+      "type": "file"
+    },
+    {
+      "path": "include\\events\\VTEventsManager.inc",
+      "accessCount": 3,
+      "lastAccessed": 1778486731570,
+      "type": "directory"
+    },
+    {
+      "path": "fcv_check.php",
+      "accessCount": 3,
+      "lastAccessed": 1778548809874,
+      "type": "file"
+    },
+    {
+      "path": "modules\\FCVMultiOwner\\FCVMultiOwner.php",
+      "accessCount": 2,
+      "lastAccessed": 1778487343272,
+      "type": "file"
+    },
+    {
+      "path": "modules\\FcvModuleBuilder\\models\\Builder.php",
+      "accessCount": 2,
+      "lastAccessed": 1778551117316,
+      "type": "file"
+    },
+    {
+      "path": "modules\\FCVMultiOwner\\FCVMultiOwnerHandler.php",
+      "accessCount": 2,
+      "lastAccessed": 1778554764921,
+      "type": "file"
+    },
+    {
       "path": "fcv_inspect.php",
       "accessCount": 1,
       "lastAccessed": 1778427184453,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 1,
+      "lastAccessed": 1778486674686,
+      "type": "directory"
+    },
+    {
+      "path": "include",
+      "accessCount": 1,
+      "lastAccessed": 1778486684548,
+      "type": "directory"
+    },
+    {
+      "path": "modules\\FCVMultiOwner\\models\\MultiOwner.php",
+      "accessCount": 1,
+      "lastAccessed": 1778487471306,
+      "type": "file"
+    },
+    {
+      "path": "layouts\\v7\\modules\\Vtiger\\uitypes\\FCVMultiOwner.tpl",
+      "accessCount": 1,
+      "lastAccessed": 1778554735245,
       "type": "file"
     }
   ],

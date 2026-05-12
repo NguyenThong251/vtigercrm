@@ -1,0 +1,17 @@
+{
+    "ref": "20260511_134651_Demo4_create",
+    "module": "Demo4",
+    "action": "create",
+    "time": "2026-05-11 13:46:51",
+    "tab_row": null,
+    "files": [],
+    "dirs": [
+        "modules\/Demo4",
+        "layouts\/v7\/modules\/Demo4"
+    ],
+    "tables": [
+        "vtiger_demo4",
+        "vtiger_demo4cf",
+        "vtiger_demo4grouprel"
+    ]
+}
