@@ -82,6 +82,22 @@
         updateSummary($wrapper, owners);
     }
 
+    function readOwnersFromDetail($container) {
+        var owners = [];
+        $container.find('.value .fcv-mo-detail .fcv-mo-chip').each(function () {
+            var $chip = $(this);
+            var owner = normalizeOwner({
+                userid: $chip.attr('data-userid'),
+                name: $.trim($chip.find('.fcv-mo-name').text()),
+                permission: $chip.attr('data-permission') || ($chip.find('.fcv-mo-read').length ? 'read' : 'write')
+            });
+            if (owner) {
+                owners.push(owner);
+            }
+        });
+        return owners;
+    }
+
     function getInitial(name) {
         return ((name || '?').trim().charAt(0) || '?').toUpperCase();
     }
@@ -296,13 +312,72 @@
         });
     }
 
+    function convertLegacyInlineEditor($editElement) {
+        if ($editElement.data('fcv-mo-legacy-converted')) {
+            return;
+        }
+
+        var $fieldValue = $editElement.closest('.fieldValue');
+        if (!$fieldValue.find('.value .fcv-mo-detail').length) {
+            return;
+        }
+
+        var $fieldBasicData = $fieldValue.find('.fieldBasicData').first();
+        var $textInput = $editElement.find('input[type="text"].inputElement').first();
+        if (!$textInput.length) {
+            return;
+        }
+
+        var fieldName = $fieldBasicData.attr('data-name') || $textInput.attr('name');
+        if (!fieldName) {
+            return;
+        }
+
+        var owners = parseOwnersValue($fieldBasicData.attr('data-value'));
+        if (!owners.length) {
+            owners = readOwnersFromDetail($fieldValue);
+        }
+
+        var $wrapper = $('<div class="fcv-mo-wrapper fcv-mo-inline-editor"></div>').attr({
+            'data-uitype': '200',
+            'data-fieldname': fieldName,
+            'data-owners': JSON.stringify(owners)
+        });
+        var $hidden = $('<input type="hidden" class="fcv-mo-hidden inputElement" />').attr('name', fieldName);
+        var $control = $('<div class="fcv-mo-inline-control"></div>').append(
+            $('<button type="button" class="btn btn-default btn-sm fcv-mo-manage-btn"></button>').append(
+                $('<i class="fa fa-users" aria-hidden="true"></i>'),
+                document.createTextNode(' Manage')
+            ),
+            $('<span class="fcv-mo-inline-summary"></span>')
+        );
+
+        $wrapper.append($hidden, $control);
+        $textInput.replaceWith($wrapper);
+        $editElement.data('fcv-mo-legacy-converted', true);
+        initWrapper($wrapper);
+    }
+
+    function convertLegacyInlineEditors() {
+        $('.editElement').each(function () {
+            convertLegacyInlineEditor($(this));
+        });
+    }
+
     function initAll() {
         $('[data-uitype="200"]').each(function () {
             initWrapper($(this));
         });
+        convertLegacyInlineEditors();
     }
 
     $(document).ready(initAll);
+
+    $(document).on('click', '.editAction', function () {
+        setTimeout(initAll, 0);
+        setTimeout(initAll, 100);
+        setTimeout(initAll, 300);
+    });
 
     if (typeof app !== 'undefined' && app.event) {
         app.event.on('Post.EditView.Load', initAll);
@@ -317,7 +392,10 @@
                     if (node.nodeType !== 1) {
                         return;
                     }
-                    if ($(node).is('[data-uitype="200"]') || $(node).find('[data-uitype="200"]').length) {
+                    if (
+                        $(node).is('[data-uitype="200"], .editElement, input[data-rule-fcvmultiowner="true"]') ||
+                        $(node).find('[data-uitype="200"], .editElement, input[data-rule-fcvmultiowner="true"]').length
+                    ) {
                         found = true;
                     }
                 });

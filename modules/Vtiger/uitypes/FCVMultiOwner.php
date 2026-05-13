@@ -34,8 +34,12 @@ class Vtiger_FCVMultiOwner_UIType extends Vtiger_Base_UIType {
         $assets = '';
         if (!self::$assetsInjected) {
             self::$assetsInjected = true;
-            $assets = '<link rel="stylesheet" href="layouts/v7/modules/FCVMultiOwner/resources/fcv-multiowner.css">'
-                    . '<script src="layouts/v7/modules/FCVMultiOwner/resources/fcv-multiowner.js"></script>';
+            $cssPath = 'layouts/v7/modules/FCVMultiOwner/resources/fcv-multiowner.css';
+            $jsPath = 'layouts/v7/modules/FCVMultiOwner/resources/fcv-multiowner.js';
+            $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
+            $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
+            $assets = '<link rel="stylesheet" href="' . $cssPath . '?v=' . $cssVersion . '">'
+                    . '<script src="' . $jsPath . '?v=' . $jsVersion . '"></script>';
         }
 
         if (empty($owners)) return $assets . '<em class="fcv-mo-empty">&mdash;</em>';
@@ -48,7 +52,8 @@ class Vtiger_FCVMultiOwner_UIType extends Vtiger_Base_UIType {
             $badge   = $perm === 'write'
                 ? '<span class="fcv-mo-perm fcv-mo-write">W</span>'
                 : '<span class="fcv-mo-perm fcv-mo-read">R</span>';
-            $html .= "<span class=\"fcv-mo-chip\" title=\"{$name} ({$perm})\">"
+            $userid = (int) $o['userid'];
+            $html .= "<span class=\"fcv-mo-chip\" title=\"{$name} ({$perm})\" data-userid=\"{$userid}\" data-permission=\"{$perm}\">"
                    . "<span class=\"fcv-mo-avatar\">{$initial}</span>"
                    . "<span class=\"fcv-mo-name\">{$name}</span>"
                    . $badge
